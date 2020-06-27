@@ -34,6 +34,7 @@ $(document).ready(function() {
         };
 
         displayPlot();
+        getCsv("https://test-covid-data.s3.us-east-2.amazonaws.com/test1.csv");
     }
 
     function displayPlot() {
