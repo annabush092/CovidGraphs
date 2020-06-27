@@ -1,42 +1,65 @@
 $(document).ready(function() {
-    console.log(moment().format())
     
-    var ctx = $('#myChart');
+    let _plot = null;
+    let _plotPoints = {};
+    let _period = {};
 
-    var myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-            datasets: [{
-                label: '# of Votes',
-                data: [12, 19, 3, 5, 2, 3],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
-            }
+    loadPage();
+
+    // Init view 
+
+    function loadPage() {
+        let minDate = "03/01/2020";
+        let todayStr = moment().format("MM/DD/YYYY");
+
+        let startDate = moment().add(-7, 'days').startOf('day').format("MM/DD/YYYY");
+        if (moment(startDate, "MM/DD/YYYY").isBefore(moment(minDate, "MM/DD/YYYY"))) {
+            startDate = minDate;
         }
-    })
+
+        // $('.input-daterange').each(function () {
+        //     $(this).datepicker({
+        //         format: 'mm/dd/yyyy',
+        //         startDate: minDate, // minDate
+        //         endDate: todayStr // maxDate
+        //     });
+
+        //     $(this).data("datepicker").pickers[0].setDate(startDate);
+        //     $(this).data("datepicker").pickers[1].setDate(todayStr);
+        // })
+
+        _period = {
+            startDate: moment(startDate, "MM/DD/YYYY").format(),
+            endDate: moment().format()
+        };
+
+        displayPlot();
+    }
+
+    function displayPlot() {
+        setDummySolarPlotPoints();
+
+        // if time period is > 2 days, force x-axis to display dates instead of hours
+        let plotXunit = false;
+        if (moment(_period.startDate).isBefore(moment(_period.endDate).subtract(2, "days"))) {
+            plotXunit = "day";
+        }
+
+        _plot = graphPlot(_solarPlotPoints, _plot, '#myChart', "Cases", plotXunit, 1);
+    }
+
+    function setDummySolarPlotPoints() {
+        _solarPlotPoints = {};
+        
+        _solarPlotPoints['Number of Cases'] = [];;// {x: 'date string', y: '#'}
+
+        let date = _period.startDate;
+        do {
+            let randomNumber = Math.floor((Math.random() * 10) + 10);
+           
+            _solarPlotPoints['Number of Cases'].push({ x: date, y: randomNumber });
+
+            date = moment(date).add(1, 'day').format();
+        } while (moment(date).isBefore(moment(_period.endDate)))
+    }
 })
