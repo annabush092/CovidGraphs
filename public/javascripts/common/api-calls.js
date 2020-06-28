@@ -19,3 +19,21 @@ function getCsv(url) {
         }
      });
 }
+
+function getJson(url) {
+    $.ajax({
+        type: "GET",
+        url: url,
+        dataType: "text",
+        success: function(data) {
+            console.log("response: ", data);
+            let response = JSON.parse(data);
+
+            console.log('parsed response: ', response)
+            
+        },
+        error: function(error) {
+            console.log('error: ', error)
+        }
+     });
+}

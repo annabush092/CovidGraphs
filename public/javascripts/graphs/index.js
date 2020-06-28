@@ -34,7 +34,10 @@ $(document).ready(function() {
         };
 
         displayPlot();
-        getCsv("https://test-covid-data.s3.us-east-2.amazonaws.com/test1.csv");
+        // getCsv("https://test-covid-data.s3.us-east-2.amazonaws.com/test1.csv");
+        // getJson("https://test-covid-data.s3.us-east-2.amazonaws.com/todaysData.json");
+
+        drawMap();
     }
 
     function displayPlot() {
