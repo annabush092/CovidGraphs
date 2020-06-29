@@ -1,1 +1,19 @@
-body { }
+.navbar {
+    height: 90px;
+
+    .container {
+        padding-top: 32px;
+        padding-bottom: 24px;
+    }
+}
+
+body { 
+    #body {
+        padding:45px;    
+    }
+
+    .row {
+        padding-top: 90px;
+        margin-bottom: 0;
+    }
+}

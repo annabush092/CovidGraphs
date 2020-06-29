@@ -26,7 +26,6 @@ function getJson(url) {
         url: url,
         dataType: "text",
         success: function(data) {
-            console.log("response: ", data);
             let response = JSON.parse(data);
 
             console.log('parsed response: ', response)
