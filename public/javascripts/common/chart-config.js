@@ -24,7 +24,10 @@ const _labelColors = [
 ]
 
 // Default line plot
-function getDefaultLineOptions(yLabel, plotXunit) {
+// Default line plot
+function getDefaultLineOptions(yIsPrice, plotXunit) {
+    let yLabel = yIsPrice ? "Price ($)" : "Average Power (W)";
+
     return {
         responsive: true,
         maintainAspectRatio: false,
@@ -73,36 +76,47 @@ function getDefaultLineOptions(yLabel, plotXunit) {
                 title: function (tooltipItem, data) {
                     // format x coordinate on tooltip
                     let rawDate = tooltipItem[0].xLabel || '';
-                    let newDate = moment(rawDate, "YYYY-MM-DD HH:mm:ss").format('MMM DD, YYYY');
+                    let newDate = moment(rawDate, "YYYY-MM-DD HH:mm:ss").format('MM/DD/YYYY h:mm:ss a');
 
                     return newDate;
                 },
-                // label: function (tooltipItem, data) {
-                //     // format y coordinate on tooltip
-                //     let label = data.datasets[tooltipItem.datasetIndex].label || '';
+                label: function (tooltipItem, data) {
+                    // format y coordinate on tooltip
+                    let label = data.datasets[tooltipItem.datasetIndex].label || '';
 
-                //     if (label) {
-                //         label += ': ';
-                //     }
+                    if (label) {
+                        label += ': ';
+                    }
 
-                //     if (yIsPrice) {
-                //         label += "$" + tooltipItem.yLabel;
-                //     } else {
-                //         label += tooltipItem.yLabel + ' W';
-                //     }
+                    if (yIsPrice) {
+                        label += "$" + tooltipItem.yLabel;
+                    } else {
+                        label += tooltipItem.yLabel + ' W';
+                    }
 
-                //     return label;
-                // }
+                    return label;
+                }
             }
         }
     };
 }
 
-function graphPlot(plotPoints, plot, chartCanvas, yLabel, plotXunit, iColor) {
+function graphPlot(plotPoints, plot, chartCanvas, yIsPrice, plotXunit, iColor) {
 
     let lineData = [];
 
     for (var device in plotPoints) {
+        let xyVals = [];
+        for(let i=0; i<plotPoints[device]['x'].length; i++) {
+            let x = moment(plotPoints[device]['x'][i] / 1000000).format();
+            
+            let y = plotPoints[device]['y'][i];
+            if(y < 0) {
+                y = null;
+            }
+            xyVals.push({ x: x, y: y })
+        }
+
         lineData.push({
             label: device,
             lineTension: 0,
@@ -111,7 +125,7 @@ function graphPlot(plotPoints, plot, chartCanvas, yLabel, plotXunit, iColor) {
             borderWidth: "1px",
             pointBackgroundColor: _colorArr[iColor],
             pointRadius: 1.5,
-            data: plotPoints[device]
+            data: xyVals
         });
 
         if (iColor >= _colorArr.length - 1) {
@@ -121,7 +135,7 @@ function graphPlot(plotPoints, plot, chartCanvas, yLabel, plotXunit, iColor) {
         }
     }
 
-    var lineOptions = getDefaultLineOptions(yLabel, plotXunit);
+    var lineOptions = getDefaultLineOptions(yIsPrice, plotXunit);
 
     // destroy existing plot
     if (plot != null) {

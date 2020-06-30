@@ -1,8 +1,8 @@
 $(document).ready(function() {
     
-    let _plot = null;
+    let _plots = {};
     let _plotPoints = {};
-    let _period = {};
+    let _plotXVals = [];
 
     loadPage();
 
@@ -33,37 +33,75 @@ $(document).ready(function() {
             endDate: moment().format()
         };
 
-        displayPlot();
-        // getCsv("https://test-covid-data.s3.us-east-2.amazonaws.com/test1.csv");
-        getJson("https://test-covid-data.s3.us-east-2.amazonaws.com/todaysData.json");
+        getJson("https://test-covid-data.s3.us-east-2.amazonaws.com/todaysData2.json");
 
         drawMap();
     }
 
-    function displayPlot() {
-        setDummySolarPlotPoints();
+    function getJson(url) {
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: "text",
+            success: function(data) {
+                let response = JSON.parse(data);
+                console.log('graph data response: ', response);
 
-        // if time period is > 2 days, force x-axis to display dates instead of hours
-        let plotXunit = false;
-        if (moment(_period.startDate).isBefore(moment(_period.endDate).subtract(2, "days"))) {
-            plotXunit = "day";
+                _plotPoints = response;
+                
+                if(_plotPoints) {
+                    displayPlot();
+                }
+            },
+            error: function(error) {
+                console.log('error: ', error)
+            }
+        });
+    }
+
+    function displayPlot() {
+        for(let key in _plotPoints) {
+            // create section
+            let div = `<div class="row" id="chart-${key}">
+                <div class="col-xs-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">${key}</div>
+                        <div class="panel-body">
+                            <canvas class="chart-canvas" width="400" height="400"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>`
+            $("#charts-container").append(div);
+
+            // add to navbar
+            // let headerBtn = `<a type="button" class="btn btn-default" href="#chart-${key}">${key}</a>`;
+            // $(".navbar .btn-group").append(headerBtn);
+
+            _plots[key] = null;
+
+            // graph plot:
+            _plot = graphPlot(_plotPoints[key], _plots[key], `#chart-${key} .chart-canvas`, false, false, 1);
         }
 
-        _plot = graphPlot(_solarPlotPoints, _plot, '#myChart', "Cases", plotXunit, 1);
+        
     }
 
     function setDummySolarPlotPoints() {
-        _solarPlotPoints = {};
-        
-        _solarPlotPoints['Number of Cases'] = [];;// {x: 'date string', y: '#'}
+        _plotPoints = {"solarData": {
+            "dummyData": [],
+            "dummyData2": []
+        }}; // {x: 'date string', y: '# Watts'}
 
-        let date = _period.startDate;
+        let date = moment().add(-7, 'days').startOf('day').format();
         do {
             let randomNumber = Math.floor((Math.random() * 10) + 10);
-           
-            _solarPlotPoints['Number of Cases'].push({ x: date, y: randomNumber });
+            
+            _plotPoints["solarData"]["dummyData"].push({ x: date, y: randomNumber });
+            _plotPoints["solarData"]["dummyData2"].push({ x: date, y: randomNumber+3 });
 
             date = moment(date).add(1, 'day').format();
-        } while (moment(date).isBefore(moment(_period.endDate)))
+        } while (moment(date).isBefore(moment()))
     }
+
 })
