@@ -2,7 +2,6 @@ $(document).ready(function() {
     
     let _plots = {};
     let _plotPoints = {};
-    let _plotXVals = [];
 
     loadPage();
 
@@ -35,7 +34,7 @@ $(document).ready(function() {
 
         getJson("https://test-covid-data.s3.us-east-2.amazonaws.com/todaysData2.json");
 
-        drawMap();
+        // drawMap();
     }
 
     function getJson(url) {
@@ -75,17 +74,28 @@ $(document).ready(function() {
             $("#charts-container").append(div);
 
             // add to navbar
-            // let headerBtn = `<a type="button" class="btn btn-default" href="#chart-${key}">${key}</a>`;
-            // $(".navbar .btn-group").append(headerBtn);
-
-            _plots[key] = null;
+            let headerBtn = `<button type="button" class="btn btn-default" id="linkto-chart-${key}">${key}</button>`;
+            $(".navbar .btn-group").append(headerBtn);
 
             // graph plot:
+            _plots[key] = null;
             _plot = graphPlot(_plotPoints[key], _plots[key], `#chart-${key} .chart-canvas`, false, false, 1);
         }
 
         
     }
+
+    $(document).on("click", ".navbar button", function() {
+        let id= $(this).attr('id');
+        let splitAt = id.indexOf("-");
+        let sectionId = id.slice(splitAt + 1);
+
+        console.log('sectionId = ', sectionId)
+
+        $('html, body').animate({
+            scrollTop: $(`#${sectionId.trim()}`).offset().top - 80
+        }, 500);        
+    })
 
     function setDummySolarPlotPoints() {
         _plotPoints = {"solarData": {
