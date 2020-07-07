@@ -62,7 +62,7 @@ $(document).ready(function() {
         for(let key in _plotPoints) {
             // create section
             let div = `<div class="row" id="chart-${key}">
-                <div class="col-xs-12">
+                <div class="col-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">${key}</div>
                         <div class="panel-body">
@@ -74,18 +74,19 @@ $(document).ready(function() {
             $("#charts-container").append(div);
 
             // add to navbar
-            let headerBtn = `<button type="button" class="btn btn-default" id="linkto-chart-${key}">${key}</button>`;
-            $(".navbar .btn-group").append(headerBtn);
+            // let headerBtn = `<button type="button" class="btn btn-default graph-button" id="linkto-chart-${key}">${key}</button>`;
+            let headerBtn = `<button type="button" class="list-group-item list-group-item-action bg-light graph-button" id="linkto-chart-${key}">${key}</button>`;
+            $("#sidebar-wrapper .list-group").append(headerBtn);
 
             // graph plot:
             _plots[key] = null;
             _plot = graphPlot(_plotPoints[key], _plots[key], `#chart-${key} .chart-canvas`, false, false, 1);
         }
 
-        
+        $("#loading").hide();
     }
 
-    $(document).on("click", ".navbar button", function() {
+    $(document).on("click", ".graph-button", function() {
         let id= $(this).attr('id');
         let splitAt = id.indexOf("-");
         let sectionId = id.slice(splitAt + 1);
