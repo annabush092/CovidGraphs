@@ -34,7 +34,7 @@ $(document).ready(function() {
             endDate: moment().format()
         };
 
-        getJson("https://test-covid-data.s3.us-east-2.amazonaws.com/todaysData2.json");
+        // getJson("https://test-covid-data.s3.us-east-2.amazonaws.com/todaysData2.json");
 
         // drawMap();
     }
@@ -86,7 +86,7 @@ $(document).ready(function() {
             }
 
             _resizeTimer = null;
-        }, 5000);
+        }, 4000);
 
     }
 
