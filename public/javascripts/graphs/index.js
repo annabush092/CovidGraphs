@@ -36,7 +36,6 @@ $(document).ready(function() {
 
         getJson("https://test-covid-data.s3.us-east-2.amazonaws.com/todaysData2.json");
 
-        console.log("this is a test")
         // drawMap();
     }
 
