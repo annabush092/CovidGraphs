@@ -3,6 +3,8 @@ $(document).ready(function() {
     let _plots = {};
     let _plotPoints = {};
 
+    let _resizeTimer = null;
+
     loadPage();
 
     // Init view 
@@ -49,6 +51,7 @@ $(document).ready(function() {
                 _plotPoints = response;
                 
                 if(_plotPoints) {
+                    addNavButtons();
                     displayPlot();
                 }
             },
@@ -56,6 +59,42 @@ $(document).ready(function() {
                 console.log('error: ', error)
             }
         });
+    }
+
+    $("#menu-toggle").click(function(e) {
+        redrawCharts();
+    });
+
+    $(window).resize(function() {
+        redrawCharts();
+    });
+
+    function redrawCharts() {    
+        $("#charts-container").empty();
+        $("#redrawing").show();
+
+        // ensure resized only once
+        if(_resizeTimer) {
+            clearTimeout(_resizeTimer);
+        } 
+
+        _resizeTimer = setTimeout(function() {
+            console.log('redrawing...')
+    
+            if(_plotPoints) {
+                displayPlot();
+            }
+
+            _resizeTimer = null;
+        }, 5000);
+
+    }
+
+    function addNavButtons() {
+        for(let key in _plotPoints) {
+            let headerBtn = `<button type="button" class="list-group-item list-group-item-action bg-light graph-button" id="linkto-chart-${key}">${key}</button>`;
+            $("#sidebar-wrapper .list-group").append(headerBtn);
+        }
     }
 
     function displayPlot() {
@@ -73,17 +112,13 @@ $(document).ready(function() {
             </div>`
             $("#charts-container").append(div);
 
-            // add to navbar
-            // let headerBtn = `<button type="button" class="btn btn-default graph-button" id="linkto-chart-${key}">${key}</button>`;
-            let headerBtn = `<button type="button" class="list-group-item list-group-item-action bg-light graph-button" id="linkto-chart-${key}">${key}</button>`;
-            $("#sidebar-wrapper .list-group").append(headerBtn);
-
             // graph plot:
             _plots[key] = null;
             _plot = graphPlot(_plotPoints[key], _plots[key], `#chart-${key} .chart-canvas`, false, false, 1);
         }
 
         $("#loading").hide();
+        $("#redrawing").hide();
     }
 
     $(document).on("click", ".graph-button", function() {
