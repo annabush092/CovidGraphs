@@ -102,11 +102,9 @@ $(document).ready(function() {
             // create section
             let div = `<div class="row" id="chart-${key}">
                 <div class="col-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">${key}</div>
-                        <div class="panel-body">
-                            <canvas class="chart-canvas" width="400" height="400"></canvas>
-                        </div>
+                    <h2>${key}</h2>
+                    <div>
+                        <canvas class="chart-canvas" width="400" height="400"></canvas>
                     </div>
                 </div>
             </div>`
@@ -132,22 +130,5 @@ $(document).ready(function() {
             scrollTop: $(`#${sectionId.trim()}`).offset().top - 80
         }, 500);        
     })
-
-    function setDummySolarPlotPoints() {
-        _plotPoints = {"solarData": {
-            "dummyData": [],
-            "dummyData2": []
-        }}; // {x: 'date string', y: '# Watts'}
-
-        let date = moment().add(-7, 'days').startOf('day').format();
-        do {
-            let randomNumber = Math.floor((Math.random() * 10) + 10);
-            
-            _plotPoints["solarData"]["dummyData"].push({ x: date, y: randomNumber });
-            _plotPoints["solarData"]["dummyData2"].push({ x: date, y: randomNumber+3 });
-
-            date = moment(date).add(1, 'day').format();
-        } while (moment(date).isBefore(moment()))
-    }
 
 })
